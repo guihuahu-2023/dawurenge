@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BigFive · 120 题完整版 性格画像</title>
+<style>
+  :root{
+    --pink:#ff7da8; --pink-deep:#f55f91; --pink-soft:#ffb7ce;
+    --pink-light:#ffd6e5; --cream:#fff8fb; --ink:#543b46; --ink-soft:#8a6573;
+    --shadow:0 24px 70px rgba(255,124,168,.18);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 18% 12%,rgba(255,183,206,.55),transparent 34%),
+      radial-gradient(circle at 85% 6%,rgba(255,214,229,.6),transparent 32%),
+      linear-gradient(180deg,#fff9fc 0%,#fff3f8 42%,#fff7fb 100%);
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{letter-spacing:-.01em;margin:0}
+  a{color:inherit;text-decoration:none}
+  .nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+    max-width:960px;margin:18px auto 0;padding:12px 20px;
+    background:rgba(255,255,255,.72);backdrop-filter:blur(14px);
+    border:1px solid var(--pink-light);border-radius:18px;box-shadow:0 16px 40px rgba(255,124,168,.16);}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+  .brand .dot{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#ff9fbd,#ff7da8);
+    display:grid;place-items:center;color:#fff;font-size:15px;box-shadow:0 8px 18px rgba(255,124,168,.4);}
+  .lang{font-size:13px;font-weight:600;color:var(--ink-soft);border:1px solid var(--pink-soft);background:#fff;
+    padding:6px 14px;border-radius:999px;}
+  main{max-width:820px;margin:0 auto;padding:26px 18px 70px}
+  .view{display:none}.view.on{display:block;animation:fade .5s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .glass{background:rgba(255,255,255,.62);backdrop-filter:blur(18px);border:1px solid var(--pink-light);
+    border-radius:28px;box-shadow:var(--shadow);padding:28px;}
+  .hero{text-align:center;padding:34px 26px}
+  .hero .kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.18em;color:var(--pink-deep);
+    background:#fff;border:1px solid var(--pink-light);padding:6px 14px;border-radius:999px;margin-bottom:18px;}
+  .grad{background:linear-gradient(135deg,#ff9fbd,#f55f91);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero h1{font-size:34px;line-height:1.25;font-weight:800}
+  .hero p{color:var(--ink-soft);margin:14px auto 0;max-width:470px;line-height:1.9;font-size:15px}
+  .btn{appearance:none;border:none;cursor:pointer;font:inherit;font-weight:700;display:inline-flex;align-items:center;
+    justify-content:center;gap:8px;padding:14px 26px;border-radius:999px;transition:.25s;font-size:15px;}
+  .btn.pink{color:#fff;background:linear-gradient(135deg,#ff9fbd,#ff7da8);box-shadow:0 14px 30px rgba(255,124,168,.4);}
+  .btn.pink:hover{transform:translateY(-2px)}
+  .btn.ghost{color:var(--pink-deep);background:#fff;border:1px solid var(--pink-soft);}
+  .btn.ghost:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .center{text-align:center}.mt{margin-top:26px}
+  .grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:8px}
+  .feat{background:rgba(255,255,255,.55);border:1px solid var(--pink-light);border-radius:20px;padding:18px}
+  .feat .ico{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#fff3f8;
+    color:var(--pink-deep);font-size:20px;margin-bottom:10px;box-shadow:0 8px 18px rgba(255,124,168,.14);}
+  .feat b{display:block;font-size:15px;margin-bottom:4px}
+  .feat span{font-size:13px;color:var(--ink-soft);line-height:1.6}
+  .bar{height:12px;border-radius:999px;background:#ffe4ee;overflow:hidden;box-shadow:inset 0 1px 3px rgba(255,124,168,.2)}
+  .bar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#ffb7ce,#ff7da8);transition:width .4s}
+  .qmeta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-soft);margin:8px 0 18px;font-weight:600}
+  .qtext{font-size:22px;font-weight:700;line-height:1.5;margin-bottom:20px}
+  .opts{display:flex;gap:8px;flex-wrap:wrap}
+  .opt{flex:1 1 120px;text-align:center;background:#fff;border:1.5px solid var(--pink-light);border-radius:14px;
+    padding:12px 8px;font-size:14px;color:var(--ink);cursor:pointer;transition:.18s;font-weight:600}
+  .opt:hover{border-color:var(--pink-soft);transform:translateY(-2px)}
+  .opt.sel{border-color:var(--pink);background:linear-gradient(135deg,#fff0f5,#ffe4ee);box-shadow:0 10px 24px rgba(255,124,168,.22);color:var(--pink-deep)}
+  .qnav{display:flex;gap:12px;margin-top:24px;justify-content:flex-end}
+  .qnav .btn{padding:12px 22px}
+  .dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px}
+  .dots b{width:12px;height:12px;border-radius:50%;background:#ffe4ee}
+  .dots b.d{background:linear-gradient(135deg,#ff9fbd,#ff7da8)}
+  .poster{padding:30px 26px;text-align:center}
+  .poster .tag{font-size:13px;font-weight:700;color:var(--pink-deep);letter-spacing:.1em}
+  .poster h2{font-size:24px;margin-top:6px;font-weight:800}
+  .poster .label{font-size:32px;font-weight:800;margin:12px 0 4px;line-height:1.2;
+    background:linear-gradient(135deg,#ff9fbd,#f55f91);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .poster .sub{color:var(--ink-soft);font-size:14px;max-width:420px;margin:0 auto;line-height:1.8}
+  .radar{display:grid;place-items:center;margin:16px 0 6px}
+  .dims{margin-top:10px;display:flex;flex-direction:column;gap:12px}
+  .dim .top{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:5px}
+  .dim .top .p{color:var(--pink-deep)}
+  .dim .txt{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-top:5px}
+  .foot{margin-top:26px;font-size:11.5px;color:var(--ink-soft);letter-spacing:.05em}
+  @media(max-width:520px){.hero h1{font-size:27px}.grid4{grid-template-columns:1fr}.qtext{font-size:19px}.poster .label{font-size:26px}}
+</style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="brand"><span class="dot">✿</span>BigFive 性格画像 · 120 题</div>
+    <span class="lang">中文</span>
+  </nav>
+
+  <main>
+    <section class="view on" id="home">
+      <div class="glass hero">
+        <span class="kicker">120 道完整题 · 约 15 分钟 · 无需注册</span>
+        <h1>测测你是哪种<span class="grad">温柔人格</span><br>完整 120 题 · 五大维度拆解</h1>
+        <p>基于 Johnson IPIP-NEO-PI-R 大五人格模型，共 120 道完整题目，拆成 5 大维度、30 个子面，生成一张可以截图分享的性格海报。</p>
+        <div class="center mt">
+          <button class="btn pink" onclick="go('test')">开始完整测试 ✦</button>
+        </div>
+      </div>
+      <div class="grid4">
+        <div class="feat"><div class="ico">∞</div><b>科学打底</b><span>Johnson IPIP-NEO-PI-R，120 题 30 子面，完整计分</span></div>
+        <div class="feat"><div class="ico">♡</div><b>温柔表达</b><span>用听得懂的语言，把 5 大维度讲得像闺蜜聊天</span></div>
+        <div class="feat"><div class="ico">◈</div><b>可分享</b><span>结果是一张漂亮的海报，随手截图发圈</span></div>
+        <div class="feat"><div class="ico">∞</div><b>本地运行</b><span>双击即开，不收集你的身份信息</span></div>
+      </div>
+    </section>
+
+    <section class="view" id="test">
+      <div class="glass">
+        <div class="bar"><i id="fill"></i></div>
+        <div class="qmeta"><span id="qcount">第 1 / 120 题</span><span id="qtime">已用 00:00</span></div>
+        <div class="qtext" id="qtext"></div>
+        <div class="opts" id="opts"></div>
+        <div class="qnav">
+          <button class="btn ghost" id="prev" onclick="prev()">← 上一题</button>
+          <button class="btn pink" id="next" onclick="next()">下一题 →</button>
+        </div>
+        <div class="dots" id="dots"></div>
+      </div>
+    </section>
+
+    <section class="view" id="result">
+      <div class="glass poster">
+        <div class="tag">你的性格画像 · 完整版</div>
+        <h2>基于 Johnson IPIP-NEO-PI-R 模型</h2>
+        <div class="label" id="label"></div>
+        <p class="sub" id="blurb"></p>
+        <div class="radar"><canvas id="cv" width="340" height="340"></canvas></div>
+        <div class="dims" id="dims"></div>
+        <div class="center mt">
+          <button class="btn ghost" onclick="reset()">再测一次</button>
+          <button class="btn pink" onclick="window.print()">保存 / 分享这张海报</button>
+        </div>
+        <div class="foot">共 120 题 · 五大维度 × 30 子面 · 计分口径：域分 24–120，子面 4–20</div>
+      </div>
+    </section>
+  </main>
+
+<script>
+/* ===== 完整 120 题（原文照搬自 packages/questions/src/data/zh-cn/questions.ts） ===== */
+var RAW=[
+["杞人忧天","plus","N",1],["平易近人","plus","E",1],["天马行空","plus","O",1],["推心置腹","plus","A",1],["不辱使命","plus","C",1],
+["易怒","plus","N",2],["喜欢参加大型聚会","plus","E",2],["相信艺术的重要性","plus","O",2],["借刀杀人","minus","A",2],["洁身自好","plus","C",2],
+["易伤感","plus","N",3],["负责","plus","E",3],["自我陶醉","plus","O",3],["乐于助人","plus","A",3],["遵守诺言","plus","C",3],
+["善察言观色","plus","N",4],["日理万机","plus","E",4],["喜欢多样化，不喜欢千篇一律","plus","O",4],["爱干架","minus","A",4],["工作努力","plus","C",4],
+["狂欢作乐","plus","N",5],["喜爱刺激","plus","E",5],["喜爱挑战","plus","O",5],["自信","minus","A",5],["时刻有准备","plus","C",5],
+["易惊慌失措","plus","N",6],["流露出欢乐","plus","E",6],["倾向于投票给自由派的政治候选人","plus","O",6],["同情无家可归之人","plus","A",6],["不假思索地做事情","minus","C",6],
+["作最坏的打算","plus","N",1],["感觉周围的人很好","plus","E",1],["享受疯狂的幻想飞行","plus","O",1],["相信别人有好的意图","plus","A",1],["擅长我的工作","plus","C",1],
+["很容易生气","plus","N",2],["在聚会上会和很多不同的人交谈","plus","E",2],["从别人可能不会注意到的事物中看到美","plus","O",2],["为了成功不择手段","minus","A",2],["健忘","minus","C",2],
+["不喜欢自己","plus","N",3],["试着去领导别人","plus","E",3],["感受别人的情绪","plus","O",3],["关心他人","plus","A",3],["诚实","plus","C",3],
+["害怕引起别人的注意","plus","N",4],["总是忙个不停","plus","E",4],["喜欢坚持我知道的事情","minus","O",4],["对人们大喊大叫","minus","A",4],["期望做的更多","plus","C",4],
+["很少放纵","minus","N",5],["寻求冒险","plus","E",5],["避免进行哲学讨论","minus","O",5],["自我感觉良好","minus","A",5],["执行我的计划","plus","C",5],
+["被各种事情淹没","plus","N",6],["玩得很开心","plus","E",6],["相信没有绝对的对与错","plus","O",6],["同情那些比我糟糕的人","plus","A",6],["鲁莽行事","minus","C",6],
+["害怕很多事情","plus","N",1],["避免与他人接触","minus","E",1],["喜欢做白日梦","plus","O",1],["相信别人所说的","plus","A",1],["顺利处理任务","plus","C",1],
+["开始发脾气","plus","N",2],["喜欢独自一人","minus","E",2],["不喜欢诗歌","minus","O",2],["利用他人","minus","A",2],["我的房间一团糟","minus","C",2],
+["我经常情绪低落","plus","N",3],["掌控一切","plus","E",3],["很少注意到我的情绪反应","minus","O",3],["对别人漠不关心","minus","A",3],["打破规则","minus","C",3],
+["只有和朋友在一起才觉得舒服","plus","N",4],["在业余时间做很多事","plus","E",4],["比喜欢改变","minus","O",4],["侮辱他人","minus","A",4],["完成足够的工作","minus","C",4],
+["轻松抵制诱惑","minus","N",5],["做事不计后果","plus","E",5],["难以理解抽象的概念","minus","O",5],["对自己有很高的评价","minus","A",5],["浪费我的时间","minus","C",5],
+["觉得我无法处理事情","plus","N",6],["热爱生活","plus","E",6],["倾向于投票给保守派的政治候选人","minus","O",6],["对他人的问题不感兴趣","minus","A",6],["做事急躁","minus","C",6],
+["易感受到压力","plus","N",1],["与人保持距离","minus","E",1],["喜欢沉思","plus","O",1],["不相信他人","minus","A",1],["知道如何把事情做好","plus","C",1],
+["不轻易生气","minus","N",2],["不随波逐流","minus","E",2],["不喜欢去艺术博物馆","minus","O",2],["阻碍别人的计划","minus","A",2],["忘记我的随身物品","minus","C",2],
+["感觉自己挺好","minus","N",3],["等待他人带路","minus","E",3],["不理解情绪化的人","minus","O",3],["不为别人浪费时间","minus","A",3],["不守信","minus","C",3],
+["没有社交困扰","minus","N",4],["喜欢放松","minus","E",4],["古板守旧","minus","O",4],["以牙还牙","minus","A",4],["花很少时间和精力在工作上","minus","C",4],
+["能够控制住我的冲动","minus","N",5],["表现得疯狂","plus","E",5],["不喜欢讨论理论","minus","O",5],["有良好的道德感","minus","A",5],["很难开始一件事情","minus","C",5],
+["在压力下保持冷静","minus","N",6],["对生活充满希望","plus","E",6],["相信我们应该眼里打击犯罪","minus","O",6],["忽视那些需要帮助的人","minus","A",6],["做事果断干脆","minus","C",6]
+];
+var Q=RAW.map(function(r){return{text:r[0],keyed:r[1],domain:r[2],facet:r[3]}});
+var PLUS=["错误","失准","普通","准确","精确"];
+var PLUS_S=[1,2,3,4,5], MINUS_S=[5,4,3,2,1];
+
+var DOMMETA={
+  O:{name:"开放性",sub:"Openness · 好奇与想象",hi:"你充满好奇与想象力，乐于尝新，是队里点子最多的人。",mid:"你在熟悉与新奇之间保持平衡，既稳得住也敢尝新。",lo:"你更偏爱熟悉安稳，做事注重实用与效率。"},
+  C:{name:"尽责性",sub:"Conscientiousness · 自律与规划",hi:"你自律、目标感强，说到做到，让人很放心。",mid:"你既讲计划也讲灵活，重要事认真、平时留余地。",lo:"你随性自由，不喜欢被规则框住，灵感来了就动。"},
+  E:{name:"外向性",sub:"Extraversion · 社交与能量",hi:"你能量满格，喜欢热闹，是聚会的气氛担当。",mid:"你热闹也行、独处也行，是灵活切换的中间型。",lo:"你安静内敛，喜欢小而深的关系，独处让你回血。"},
+  A:{name:"宜人性",sub:"Agreeableness · 温柔与包容",hi:"你温柔共情，很会照顾别人情绪，是朋友里最贴心的那个。",mid:"你既体谅别人也守住自己，温柔但有边界。",lo:"你直接坦率，重真实胜过圆滑，有自己的标准和脾气。"},
+  N:{name:"神经质",sub:"Neuroticism · 情绪与敏感",hi:"你细腻敏感，能察觉别人忽略的细节，也容易为小事上头。",mid:"你情绪整体平稳，有波动但能较快调回来。",lo:"你情绪稳定、抗压强，突发状况也不容易慌。"}
+};
+var LABEL={O:"灵感创意型",C:"可靠自律型",E:"能量满格型",A:"温柔包容型",N:"细腻敏感型"};
+
+var cur=0, ans=new Array(Q.length), timer=null, secs=0;
+
+function go(v){
+  document.querySelectorAll('.view').forEach(function(e){e.classList.remove('on')});
+  document.getElementById(v).classList.add('on');window.scrollTo(0,0);
+  if(v==='test'){render();buildDots();startTimer();}
+  if(v==='result'){stopTimer();drawResult();}
+}
+function startTimer(){stopTimer();secs=0;tick();timer=setInterval(tick,1000);}
+function stopTimer(){if(timer){clearInterval(timer);timer=null;}}
+function tick(){secs++;var m=String(Math.floor(secs/60)).padStart(2,'0'),s=String(secs%60).padStart(2,'0');document.getElementById('qtime').textContent='已用 '+m+':'+s;}
+
+function buildDots(){
+  var d=document.getElementById('dots');d.innerHTML='';
+  Q.forEach(function(_,i){var b=document.createElement('b');b.title='第'+(i+1)+'题';if(i===cur||ans[i]!==undefined)b.className='d';d.appendChild(b);});
+}
+function render(){
+  var q=Q[cur];
+  document.getElementById('qcount').textContent='第 '+(cur+1)+' / '+Q.length+' 题 · '+DOMMETA[q.domain].name+' 子面 '+q.facet;
+  document.getElementById('qtext').textContent=q.text+'（'+(q.keyed==='plus'?'正向':'反向')+'计分）';
+  document.getElementById('fill').style.width=Math.round(cur/Q.length*100)+'%';
+  var box=document.getElementById('opts');box.innerHTML='';
+  var labels=PLUS, scores=(q.keyed==='plus'?PLUS_S:MINUS_S);
+  labels.forEach(function(o,i){
+    var b=document.createElement('div');b.className='opt'+(ans[cur]!==undefined&&ans[cur]===i?' sel':'');
+    b.textContent=o;b.onclick=function(){ans[cur]=i;render();buildDots();};box.appendChild(b);
+  });
+  document.getElementById('prev').disabled=cur===0;
+  var nx=document.getElementById('next');
+  if(cur===Q.length-1){nx.textContent='看我的结果 ✦';nx.onclick=finish;}
+  else{nx.textContent='下一题 →';nx.onclick=next;}
+}
+function next(){if(ans[cur]===undefined)return;if(cur<Q.length-1)cur++;render();}
+function prev(){if(cur>0)cur--;render();}
+function reset(){cur=0;ans=new Array(Q.length);go('test');}
+function finish(){
+  var missing=ans.filter(function(a){return a===undefined}).length;
+  if(missing>0){alert('还有 '+missing+' 题没答完哦（共 120 题，一张不少）。回去补答一下吧～');return;}
+  go('result');
+}
+
+/* 正式计分：域分 = 该域 24 题得分之和（24–120），子面 = 4 题之和（4–20） */
+function scoreDomain(d){var s=0;Q.forEach(function(q,i){if(q.domain===d)s+=(Q[i].keyed==='plus'?PLUS_S[ans[i]]:MINUS_S[ans[i]]);});return s;}
+function scoreFacet(d,f){var s=0;Q.forEach(function(q,i){if(q.domain===d&&q.facet===f)s+=(Q[i].keyed==='plus'?PLUS_S[ans[i]]:MINUS_S[ans[i]]);});return s;}
+function level(avg){if(avg>3.5)return'hi';if(avg<2.5)return'lo';return'mid';}
+
+function drawResult(){
+  var doms=['O','C','E','A','N'];
+  var pcts=doms.map(function(d){return Math.round((scoreDomain(d)-24)/(120-24)*100)});
+  var top=pcts.indexOf(Math.max.apply(null,pcts));
+  var topKey=doms[top];
+  document.getElementById('label').textContent=LABEL[topKey]+' · '+DOMMETA[topKey].name;
+  var lvl=level(scoreDomain(topKey)/24);
+  document.getElementById('blurb').textContent='你最突出的是「'+DOMMETA[topKey].name+'」。'+DOMMETA[topKey][lvl];
+
+  var box=document.getElementById('dims');box.innerHTML='';
+  doms.forEach(function(d,i){
+    var p=pcts[i],l=level(scoreDomain(d)/24);
+    var el=document.createElement('div');el.className='dim';
+    el.innerHTML='<div class="top"><span>'+DOMMETA[d].name+' · '+DOMMETA[d].sub+'</span><span class="p">'+scoreDomain(d)+'/120 · '+p+'%</span></div>'+
+      '<div class="bar"><i style="width:'+p+'%"></i></div><div class="txt">'+DOMMETA[d][l]+'</div>';
+    box.appendChild(el);
+  });
+  drawRadar(pcts,doms);
+}
+
+function drawRadar(vals,doms){
+  var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  var cx=cv.width/2,cy=cv.height/2,R=120,n=vals.length;
+  function pt(i,r){var a=-Math.PI/2+i*2*Math.PI/n;return[cx+Math.cos(a)*r,cy+Math.sin(a)*r];}
+  ctx.strokeStyle='#ffd6e5';
+  for(var ring=1;ring<=3;ring++){ctx.beginPath();for(var i=0;i<=n;i++){var p=pt(i%n,R*ring/3);if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);}ctx.closePath();ctx.lineWidth=1;ctx.stroke();}
+  ctx.strokeStyle='#ffe4ee';for(var i=0;i<n;i++){var p=pt(i,R);ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(p[0],p[1]);ctx.stroke();}
+  ctx.beginPath();vals.forEach(function(v,i){var r=R*v/100,p=pt(i,r);if(i===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);});
+  ctx.closePath();ctx.fillStyle='rgba(255,124,168,.35)';ctx.fill();ctx.strokeStyle='#ff7da8';ctx.lineWidth=2.5;ctx.stroke();
+  ctx.fillStyle='#f55f91';vals.forEach(function(v,i){var r=R*v/100,p=pt(i,r);ctx.beginPath();ctx.arc(p[0],p[1],4,0,7);ctx.fill();});
+  ctx.fillStyle='#8a6573';ctx.font='12px sans-serif';ctx.textAlign='center';
+  doms.forEach(function(d,i){var p=pt(i,R+18);ctx.fillText(DOMMETA[d].name,p[0],p[1]+4);});
+}
+</script>
+</body>
+</html>
